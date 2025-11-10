@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riassunto Reti TLC - Cap. 2</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script 
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" 
+        id="MathJax-script">
+    </script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.5em; }
+        h3 { font-size: 1.25em; }
+        h4 { font-size: 1.1em; border-bottom: none; }
+        ul, ol {
+            padding-left: 2em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        code {
+            font-family: monospace;
+            background-color: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #e1e4e8;
+            border: 0;
+        }
+        /* Stile per le formule in blocco */
+        .formula {
+            display: block;
+            text-align: center;
+            margin: 1em 0;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Capitolo 2: Analisi Prestazionale</h1>
+    <p style="font-size:.9em; margin-top:-10px;">
+        <a href="index.html" style="text-decoration:none; color:#0366d6;">&larr; Torna all'indice</a>
+    </p>
+
+    <h2>1. Cos'è l'Analisi Prestazionale?</h2>
+    <p>L'obiettivo di questo capitolo è definire i concetti elementari per lo studio delle <strong>prestazioni delle reti di TLC a commutazione di pacchetto</strong>.</p>
+    <p>L'approccio utilizzato è quello di definire una serie di parametri prestazionali misurati <strong>"ai morsetti esterni"</strong> di un sistema (o rete). Questo significa che misuriamo cosa entra e cosa esce dal sistema, senza analizzarne la complessità interna.</p>
+    <p>Questi parametri possono essere applicati a sistemi di diversa complessità:</p>
+    <ul>
+        <li>Una rete semplice (un singolo canale di trasmissione).</li>
+        <li>Una rete complessa (dorsale + canali d'accesso).</li>
+        <li>Un sistema completo (processi applicativi su nodi finali + rete).</li>
+    </ul>
+
+    <hr>
+
+    <h2>2. Parametri Prestazionali Generali di una Rete</h2>
+    <p>Queste definizioni si applicano a un qualsiasi sistema rete di TLC.</p>
+
+    <h3>2.1. Tempo di Ritardo (o Latenza)</h3>
+    <ul>
+        <li><strong>Tempo di Ritardo (generico)</strong>: È l'intervallo di tempo che intercorre tra l'istante d'ingresso e l'istante d'uscita di un bit (o pacchetto) dalla rete. Questa misura viene presa quando sulla rete <strong>è presente anche altro traffico</strong>. Si misura in secondi (s) o sottomultipli (ms, µs, ns).</li>
+        <li><strong>Tempo di Ritardo a Rete Scarica ($\tau_{\text{rete\_scarica}}$)</strong>: È lo stesso intervallo di tempo, ma misurato quando nella rete <strong>non sono presenti altri traffici</strong>. Questo rappresenta di norma il <strong>minimo tempo di ritardo</strong> sperimentabile sulla rete ($\tau_{\text{min}}$).</li>
+    </ul>
+
+    <h3>2.2. Throughput e Capacità</h3>
+    <ul>
+        <li><strong>Throughput Medio</strong>: Indica il numero di bit (o pacchetti) trasferiti da una rete nell'unità di tempo. Viene misurato in un intervallo di osservazione $T_o$.
+            <ul>
+                <li>Unità di misura: <strong>bps</strong> (bit per second) e multipli (Kbps, Mbps, Gbps), oppure <strong>Byte/s</strong> e multipli, o Packet per second.</li>
+            </ul>
+        </li>
+        <li><strong>Capacità</strong>: È definita come il <strong>massimo throughput</strong> (<code>Max(Throughput)</code>) ottenibile da una rete.</li>
+    </ul>
+
+    <h3>2.3. Utilizzo Medio</h3>
+    <ul>
+        <li><strong>Utilizzo Medio ($U$)</strong>: È il rapporto tra la somma degli intervalli di tempo in cui un sistema è occupato e l'intervallo totale di tempo di osservazione $T_o$.</li>
+        <li>È una grandezza adimensionale (senza unità di misura) con un valore sempre compreso <strong>tra 0 e 1</strong> (o 0% e 100%).</li>
+        <li>Questa grandezza è particolarmente utile per misurare sistemi semplici, come un canale di trasmissione.</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Parametri Prestazionali del Canale di Trasmissione</h2>
+    <p>Applichiamo ora le definizioni generali al caso della rete più semplice: il singolo canale di trasmissione.</p>
+
+    <h3>3.1. Throughput e Capacità del Canale ($C$)</h3>
+    <ul>
+        <li><strong>Throughput del Canale</strong>: Numero di bit trasmessi dall'interfaccia del nodo mittente sul canale nell'unità di tempo (misurati in $T_o$).</li>
+        <li><strong>Capacità del Canale ($C$)</strong>: È il <code>Max(Throughput)</code> del canale. Rappresenta il massimo numero di bit inviabili sul canale nell'unità di tempo. Viene comunemente chiamata <strong>velocità della linea</strong> o <strong>bit-rate</strong>.</li>
+    </ul>
+
+    <h3>3.2. Ritardo del Canale ($\tau$)</h3>
+    <ul>
+        <li><strong>Tempo di Ritardo (o Propagazione, $\tau$)</strong>: È il tempo (in secondi o sottomultipli) necessario a un singolo bit per propagarsi da un capo all'altro del canale.</li>
+        <li><strong>Prodotto Banda-Ritardo ($C\tau$)</strong>: È un modo alternativo per esprimere il ritardo. Anziché in secondi, si esprime come il prodotto <code>Capacità × Ritardo</code> ($C \times \tau$). Il risultato è misurato in <strong>bit</strong>.
+            <ul>
+                <li>Questo valore esprime il <strong>numero di bit "in volo"</strong> (cioè già trasmessi ma non ancora arrivati) istante per istante sul canale, ipotizzando che questo sia sempre in trasmissione.</li>
+                <li>Esempio: $C = 10 \text{ Kbps}$ ($10^4 \text{ b/s}$), $\tau = 1 \text{ ms}$ ($10^{-3} \text{ s}$). Il prodotto $C\tau = 10^4 \times 10^{-3} = 10 \text{ bit}$.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>3.3. Utilizzo del Canale</h3>
+    <ul>
+        <li><strong>Canale Simplex</strong>: È il rapporto tra il tempo totale in cui il canale è in trasmissione (nell'unico senso permesso) e il tempo di osservazione $T_o$.
+            <span class="formula">
+                $U(in\%) = \frac{(t_{2}-t_{1})+(t_{4}-t_{3})+(t_{6}-t_{5})}{T_{o}} \cdot 100$
+            </span>
+        </li>
+        <li><strong>Canale Half-duplex</strong>: È il rapporto tra il tempo totale in cui il canale è in trasmissione (in uno qualsiasi dei due sensi) e il tempo di osservazione $T_o$.</li>
+        <li><strong>Canale Full-duplex</strong>: Vanno calcolati separatamente gli utilizzi dei due canali simplex (uno per direzione) che compongono il canale full-duplex.</li>
+    </ul>
+
+    <hr>
+
+    <h2>4. Modelli e Prestazioni dei Nodi di Rete</h2>
+    <p>Le prestazioni di una rete complessa non dipendono solo dai canali, ma anche dalle prestazioni dei <strong>nodi</strong> (sia finali che intermedi di commutazione).</p>
+    
+    <h3>4.1. Ipotesi Semplificative per i Nodi (per Esercizi)</h3>
+    <p>Nello studio delle prestazioni, per semplificare i calcoli, si assumono spesso (e non realisticamente) le seguenti ipotesi:</p>
+    <ul>
+        <li><strong>CPU infinitamente veloci</strong>: Il tempo di processamento del pacchetto da parte del nodo ($t_p$) tende a zero ($t_p \rightarrow 0$).</li>
+        <li><strong>Buffer di dimensione infinita</strong>: Le code di attesa nei nodi possono essere lunghe a piacere. Di conseguenza, <strong>non si verifica mai l'evento di "buffer overflow"</strong> (perdita di pacchetti perché la coda è piena).</li>
+    </ul>
+    <p>In un diagramma temporale, un nodo store-and-forward con $t_p \rightarrow 0$ può iniziare a ritrasmettere un pacchetto nell'istante esatto in cui ha finito di riceverlo, se non c'è altro traffico in coda.</p>
+
+    <h3>4.2. Calcolo delle Prestazioni in Reti Complesse</h3>
+    <p>Per calcolare le prestazioni di una rete complessa (come somma delle prestazioni di nodi e canali) manca ancora un'informazione fondamentale: l'insieme delle regole attraverso cui i nodi si scambiano i pacchetti. Queste regole prendono il nome di <strong>protocolli di comunicazione</strong> (trattati nei prossimi capitoli).</p>
+    
+    <h4>Ipotesi Semplificativa per le Reti</h4>
+    <p>Il calcolo delle prestazioni rimane complesso perché non si ha conoscenza di tutti i traffici che transitano sulla rete (si usano infatti modelli probabilistici).</p>
+    <p>Tuttavia, si può imporre una <strong>forte ipotesi semplificativa</strong>: si assume che sulla rete <strong>non ci siano altri traffici</strong> eccetto il nostro ("traffico di prova").</p>
+    <p>In questa condizione di <strong>rete scarica</strong>, è possibile calcolare facilmente:</p>
+    <ul>
+        <li>La <strong>Capacità del sistema</strong>: $C_{\text{sistema}}$</li>
+        <li>Il <strong>Ritardo minimo</strong>: $\tau_{\text{rete scarica}} = \tau_{\text{min}}$</li>
+    </ul>
+
+</body>
+</html>

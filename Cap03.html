@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riassunto Reti TLC - Cap. 3</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script 
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" 
+        id="MathJax-script">
+    </script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.5em; }
+        h3 { font-size: 1.25em; }
+        h4 { font-size: 1.1em; border-bottom: none; }
+        ul, ol {
+            padding-left: 2em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        code {
+            font-family: monospace;
+            background-color: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #e1e4e8;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Capitolo 3: Approcci alla Costruzione di Reti a Pacchetto</h1>
+    <p style="font-size:.9em; margin-top:-10px;">
+        <a href="index.html" style="text-decoration:none; color:#0366d6;">&larr; Torna all'indice</a>
+    </p>
+
+    <h2>1. Il Problema</h2>
+    <p>L'obiettivo è costruire una rete a commutazione di pacchetto. In questo tipo di rete, un nodo intermedio deve essere in grado di eseguire la commutazione (inoltro) dei pacchetti analizzando i pacchetti stessi. Esploriamo due approcci per realizzare questo sistema.</p>
+
+    <hr>
+
+    <h2>2. L'Approccio 'Monolitico' (Il Metodo Sbagliato)</h2>
+    <p>L'approccio più intuitivo è quello 'monolitico': si scrive un <strong>unico, grande programma</strong> su ciascun nodo di rete (mittente, destinatario, intermedio) che svolge tutte le operazioni richieste.</p>
+    <ul>
+        <li><strong>Sul Mittente</strong>: Il programma genera i pacchetti e li trasmette sul canale.</li>
+        <li><strong>Sul Nodo Intermedio</strong>: Il programma riconosce che un pacchetto non è per lui e lo commuta verso il prossimo nodo.</li>
+        <li><strong>Sul Destinatario</strong>: Il programma riceve i pacchetti.</li>
+    </ul>
+
+    <h3>Perché l'Approccio Monolitico Fallisce</h3>
+    <p>Analizzando tre casi via via più complessi, emergono problemi insormontabili:</p>
+
+    <h4>Caso 1: Due nodi, un canale, un'applicazione (es. File Transfer)</h4>
+    <p>Due PC collegati da un cavo che si scambiano un file. Anche in questo scenario banale, il programma monolitico dovrebbe gestire:</p>
+    <ul>
+        <li><strong>Sincronizzazione</strong>: Il destinatario deve essere in ascolto proprio quando il mittente invia.</li>
+        <li><strong>Controllo di Flusso</strong>: Il mittente non deve spedire pacchetti a un ritmo più veloce di quello che il destinatario può reggere, altrimenti si perderebbero dati.</li>
+        <li><strong>Controllo di Errore</strong>: Se un'interferenza sul canale "sporca" un pacchetto, servono procedure di <b>error detection</b> (diagnosi) e <b>error recovery</b> (correzione/ritrasmissione).</li>
+    </ul>
+
+    <h4>Caso 2: Come il Caso 1, ma con due applicazioni (es. File Transfer + Instant Messaging)</h4>
+    <p>Oltre ai problemi precedenti, se ne aggiungono di nuovi:</p>
+    <ul>
+        <li><strong>Conflitto in Uscita</strong>: Se entrambe le applicazioni (File Transfer e IM) tentano di inviare dati nello stesso momento, creano un conflitto sull'uso della porta di comunicazione.</li>
+        <li><strong>Demultiplazione in Ingresso</strong>: Quando un pacchetto arriva, come fa il nodo a sapere se è destinato all'applicazione di File Transfer o a quella di Instant Messaging? Manca un meccanismo per identificare il "legittimo destinatario".</li>
+    </ul>
+
+    <h4>Caso 3: Due nodi finali e un nodo intermedio (A → B → C)</h4>
+    <p>Qui l'applicazione A deve comunicare con C, passando per B. Il programma "monolitico" sul nodo B deve essere scritto "su misura" per commutare i pacchetti da A a C.</p>
+    <ul>
+        <li><strong>Accoppiamento Stretto</strong>: L'applicazione di commutazione (B) dipende totalmente dai dettagli di A e C. Se l'applicazione A viene aggiornata o modificata, anche il programma sul nodo B deve essere modificato.</li>
+        <li><strong>Scalabilità</strong>: L'inserimento di nuovi nodi finali che comunicano attraverso B comporterebbe inevitabilmente modifiche al programma su B.</li>
+    </ul>
+
+    <h3>Conclusione sull'Approccio Monolitico</h3>
+    <p>L'approccio monolitico è **irraggiungibile** per reti complesse. Anche se si riuscisse a costruire, la rete sarebbe totalmente **immutabile**: ogni modifica (anche solo applicativa) avrebbe un impatto pesante su tutto il resto della rete. <strong>Non va bene</strong>.</p>
+
+    <hr>
+
+    <h2>3. L'Approccio 'a Strati' (Il Metodo Corretto)</h2>
+    <p>Il problema è troppo complesso e va suddiviso in sotto-problemi. Questo si fa attraverso una **stratificazione** delle funzioni.</p>
+    <ol>
+        <li><strong>Prima Suddivisione</strong>: Si separano le funzioni in <strong>Porzione 'applicativa'</strong> (le applicazioni, es. browser, file transfer) e <strong>Porzione 'comunicativa'</strong> (tutto il software che si occupa della comunicazione).
+            <ul>
+                <li>Questo permette a più applicazioni di usare lo stesso servizio comunicativo.</li>
+                <li>Tuttavia, la porzione comunicativa è ancora troppo complessa.</li>
+            </ul>
+        </li>
+        <li><strong>Seconda Suddivisione</strong>: La porzione comunicativa viene a sua volta suddivisa verticalmente in $N$ <strong>livelli (layer)</strong>.</li>
+    </ol>
+    <p>Questa struttura prende il nome di <strong>architettura di comunicazione a strati</strong>. Nella maggioranza dei casi, il numero di livelli $N$ è compreso tra 4 e 7.</p>
+
+    <h3>3.1. Principi dell'Architettura a Strati</h3>
+    
+    <h4>Servizi tra Livelli</h4>
+    <p>Un'architettura a strati costruisce un servizio comunicativo sofisticato "per gradi". Ogni livello $k$:</p>
+    <ul>
+        <li><strong>Chiede un servizio</strong> al livello sottostante ($k-1$).</li>
+        <li><strong>Fornisce un servizio</strong> al livello sovrastante ($k+1$).</li>
+    </ul>
+    <p>Un principio chiave è l'<strong>indipendenza tra i livelli</strong>: un livello $k$ dovrebbe essere sostituibile con un altro, purché offra gli stessi servizi al livello $k+1$ e richieda gli stessi servizi al $k-1$, in modo trasparente al resto dell'architettura.</p>
+
+    <h4>Incapsulamento (Encapsulation)</h4>
+    <p>Le funzioni di controllo sono "spalmate" tra i vari livelli. Per poter effettuare i propri controlli, ogni livello aggiunge ai dati che riceve dal livello superiore delle proprie informazioni di controllo. Queste informazioni sono chiamate:</p>
+    <ul>
+        <li><strong>Testata (Header)</strong>: Se aggiunte all'inizio.</li>
+        <li><strong>Coda (Trailer)</strong>: Se aggiunte alla fine.</li>
+    </ul>
+    <p>Questo processo di "aggiungere testate" forma il pacchetto finale che verrà trasmesso.</p>
+
+    <h4>Flusso dei Dati</h4>
+    <ul>
+        <li><strong>Sul Mittente</strong>: Un messaggio applicativo "scende" lo stack. Ad ogni livello, viene incapsulato con l'header (e/o trailer) di quel livello. Il Livello 1 infine lo trasmette bit-a-bit sul canale.</li>
+        <li><strong>Sul Destinatario</strong>: Il pacchetto "risale" lo stack. Ad ogni livello, l'header/trailer di quel livello viene letto, controllato ed eliminato, prima di passare il contenuto (payload) al livello superiore, fino all'applicazione.</li>
+        <li><strong>Sul Nodo Intermedio</strong>: Questa è la chiave. Il pacchetto risale lo stack solo fino al livello necessario per la commutazione (es. Livello 3). Il nodo consulta l'header di Livello 3, decide dove inoltrare il pacchetto, e lo rimanda giù per lo stack (verso un'altra porta di uscita). Le applicazioni e i livelli superiori del nodo intermedio non vengono mai coinvolti.</li>
+    </ul>
+
+    <h3>3.2. Definizioni Chiave</h3>
+    <ul>
+        <li><strong>Entità Comunicante (Peer Entity) di livello k</strong>: Il software, su un nodo, che risiede a un livello $k$ ed è responsabile delle sue funzioni (es. creare e leggere l'Header-k).</li>
+        <li><strong>Protocollo di Comunicazione di livello k</strong>: L'insieme di regole che le *entità comunicanti di pari livello* (peer entities) usano per scambiarsi messaggi. Definisce la sintassi e la semantica dei loro messaggi.</li>
+        <li><strong>Protocol Data Unit (PDU) di livello k</strong>: È il "pacchetto" scambiato tra due entità di livello $k$. Una $k$-PDU è formata da <b>$k$-Header</b> e <b>$k$-Payload</b>. Il $k$-Payload è semplicemente la $(k+1)$-PDU proveniente dal livello superiore.</li>
+        <li><strong>Service Access Point (SAP) di livello k (k-SAP)</strong>: È l'interfaccia, il "punto di accesso" logico, che il livello $k+1$ usa per accedere ai servizi offerti dal livello $k$ sullo *stesso nodo*.</li>
+    </ul>
+
+    <hr>
+
+    <h2>4. Architetture Standard</h2>
+    <p>Nel tempo sono nate diverse architetture, prima proprietarie (es. IBM SNA), poi standard (non proprietarie).</p>
+    <ul>
+        <li><strong>Modello ISO/OSI</strong>: Un modello di riferimento a 7 livelli definito dall'ISO. Non è un'architettura reale, ma un modello che definisce *cosa* ogni livello dovrebbe fare. Non ha avuto successo commerciale.</li>
+        <li><strong>Architettura TCP/IP</strong>: È l'architettura che si è imposta su tutte ed è diventata lo standard di fatto (è l'architettura di Internet).</li>
+    </ul>
+
+    <hr>
+
+    <h2>5. Funzioni dei Primi 3 Livelli (Comuni a tutte le Architetture)</h2>
+    <p>Quasi tutte le architetture presentano funzionalità simili nei primi 3 livelli (partendo dal basso).</p>
+
+    <h3>Livello 1: Physical (Fisico)</h3>
+    <p>Si occupa della trasmissione dei singoli <strong>bit</strong> tra due nodi <strong>adiacenti</strong> (connessi direttamente).</p>
+    <ul>
+        <li>Effettua la codifica elettrica/ottica dei bit (es. definisce "quale tensione è un 1").</li>
+        <li>Trasmette i simboli senza comprenderne il significato.</li>
+    </ul>
+
+    <h3>Livello 2: Data Link Control (DLC)</h3>
+    <p>Fornisce un servizio di interconnessione tra nodi <strong>adiacenti</strong>, "arricchendo" il servizio "scarno" del Livello 1.</p>
+    <ul>
+        <li>Definisce il formato della <strong>2-PDU</strong>, spesso chiamata <strong>Frame</strong>.</li>
+        <li><strong>Funzioni tipiche</strong>:
+            <ul>
+                <li><strong>Error Detection</strong>: Verifica l'integrità del frame ricevuto (quasi sempre presente).</li>
+                <li><strong>Error Recovery (ACK)</strong>: Conferma di ricezione ed eventuale ritrasmissione (presente solo in alcuni protocolli).</li>
+                <li><strong>Controllo di Flusso</strong>: Gestione del ritmo di invio (presente solo in alcuni protocolli).</li>
+            </ul>
+        </li>
+        <li><strong>Indirizzamento L2</strong>: Se il canale è <strong>ad accesso multiplo</strong> (es. WiFi o Ethernet), il Livello 2 deve prevedere degli indirizzi (es. indirizzi MAC) per identificare le singole entità su quel canale. Se il canale è <strong>punto-a-punto</strong>, non servono indirizzi.</li>
+        <li><strong>Trasparenza dei Dati</strong>: Risolve il problema di ambiguità che si crea se il payload (i dati) contiene per caso una sequenza di bit identica a un header/trailer speciale del L2. Lo fa con tecniche di <strong>bit-stuffing</strong> o <strong>byte-stuffing</strong> (inserendo bit/byte "di riempimento" che vengono poi rimossi a destinazione).</li>
+    </ul>
+
+    <h3>Livello 3: Network (Rete)</h3>
+    <p>Mentre il Livello 2 gestisce la comunicazione tra nodi adiacenti, il Livello 3 gestisce la comunicazione tra nodi <strong>non adiacenti</strong>.</p>
+    <ul>
+        <li>È il livello a cui viene affidata la funzione di <strong>commutazione (switching)</strong> e <strong>instradamento (routing)</strong>.</li>
+        <li>Permette a due nodi di comunicare attraverso uno o più <strong>nodi intermedi</strong>.</li>
+        <li>I nodi intermedi esaminano l'header di Livello 3 (es. l'indirizzo IP) per decidere a quale nodo successivo inoltrare il pacchetto.</li>
+    </ul>
+
+</body>
+</html>

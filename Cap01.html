@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riassunto Reti TLC</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script 
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" 
+        id="MathJax-script">
+    </script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.5em; }
+        h3 { font-size: 1.25em; }
+        ul, ol {
+            padding-left: 2em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        code {
+            font-family: monospace;
+            background-color: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #e1e4e8;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Riassunto: Reti di Telecomunicazione (TLC)</h1>
+    <p style="font-size:.9em; margin-top:-10px;">
+        <a href="index.html" style="text-decoration:none; color:#0366d6;">&larr; Torna all'indice</a>
+    </p>
+
+    <h2>1. Introduzione e Scopo delle Reti di Telecomunicazione (TLC)</h2>
+
+    <h3>1.1. Perché Costruire Reti di TLC?</h3>
+    <p>Le reti di telecomunicazione (TLC) nascono per un'esigenza fondamentale: <strong>consentire alle persone di comunicare tra loro</strong>. Si rivelano indispensabili quando la comunicazione diretta è difficoltosa o impossibile, ad esempio a causa della distanza fisica.</p>
+    <p>Per comunicare, gli interlocutori utilizzano apparati specifici chiamati <strong>dispositivi d'utente</strong> (come telefoni, calcolatori, smartphone, tablet). Questi dispositivi, noti anche come <em>end-system</em>, <em>terminali</em>, <em>end-station</em> o <em>nodi finali</em>, devono essere <strong>interconnessi</strong> tra loro per poter funzionare.</p>
+    <p>La <strong>Teoria delle reti di TLC</strong> è la disciplina che studia le modalità attraverso cui è possibile realizzare questa interconnessione.</p>
+
+    <h3>1.2. Gli "Ingredienti" Fondamentali di una Rete</h3>
+    <p>Per costruire una qualsiasi rete di TLC sono necessari due elementi fondamentali:</p>
+    <ol>
+        <li><strong>Nodi di rete</strong>: Includono i nodi finali (gli <em>end-system</em>) ma, come vedremo, anche altri tipi di nodi.</li>
+        <li><strong>Canali di trasmissione</strong>: Detti anche <em>link</em> o <em>canali di comunicazione</em>, hanno la funzione di collegare tra loro i nodi della rete. Esempi reali includono cavi, fibre ottiche, o anche l'aria e il vuoto (per le comunicazioni wireless).</li>
+    </ol>
+
+    <hr>
+
+    <h2>2. Topologie di Rete: Come Interconnettere i Nodi</h2>
+
+    <p>Il problema di <em>come</em> interconnettere i nodi finali riguarda la <strong>topologia</strong> della rete. Questo campo è studiato formalmente dalla Teoria dei Grafi. Le topologie principali sono:</p>
+
+    <h3>2.1. Topologia a Maglia Completa (Full Mesh)</h3>
+    <p>In questa topologia, <strong>per ogni coppia di nodi esiste un canale di trasmissione che li collega direttamente</strong>.</p>
+    <ul>
+        <li><strong>Componenti</strong>: La rete è costituita solo da due tipi di elementi: i <strong>nodi finali</strong> (mittenti e destinatari) e i <strong>canali di trasmissione</strong>.</li>
+        <li><strong>Numero di Canali</strong>: Per $n$ nodi, il numero di canali necessari è $n(n-1)/2$.</li>
+        <li><strong>Svantaggi</strong>: Questa soluzione è <strong>quasi mai adottabile</strong> nella pratica, poiché il numero di link necessari cresce con il <em>quadrato</em> del numero di nodi, rendendola estremamente costosa e complessa da realizzare all'aumentare dei nodi.</li>
+    </ul>
+
+    <h3>2.2. Topologia a Maglia Non Completa Connessa (Partial Mesh)</h3>
+    <p>Questa è la topologia più comune e si definisce per due caratteristiche:</p>
+    <ol>
+        <li>Esiste <strong>almeno una coppia di nodi non collegata</strong> direttamente da un canale.</li>
+        <li>È <strong>sempre possibile raggiungere qualunque altro nodo</strong> della rete partendo da qualsiasi nodo (la rete è "connessa").</li>
+    </ol>
+    <ul>
+        <li><strong>Componenti</strong>: Questa topologia introduce un terzo elemento fondamentale. La rete è composta da:
+            <ul>
+                <li><strong>Nodi finali</strong> (mittenti e destinatari).</li>
+                <li><strong>Canali di trasmissione</strong>.</li>
+                <li><strong>Nodi intermedi</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Funzionamento</strong>: Le coppie di nodi finali non collegate direttamente devono comunicare <strong>attraversando uno o più nodi intermedi</strong>.</li>
+        <li><strong>Numero di Canali</strong>: Per $n$ nodi, il numero di canali è inferiore a $n(n-1)/2$.</li>
+    </ul>
+
+    <h3>2.3. La Dorsale (Backbone)</h3>
+    <p>Nelle topologie a maglia non completa, l'insieme dei nodi intermedi costituisce una struttura che prende il nome di <strong>dorsale</strong> o <strong>backbone</strong>.</p>
+    <ul>
+        <li>Il nodo intermedio a cui si collega un end-system è chiamato <strong>nodo d'accesso alla rete</strong>.</li>
+        <li>La dorsale stessa può avere una struttura molto complessa, formata dall'interconnessione di varie sotto-dorsali.</li>
+        <li>Esempi di reti basate su questo principio sono le <strong>reti telefoniche tradizionali</strong> (fino a qualche anno fa) e <strong>Internet</strong>.</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Criteri di Studio e Classificazione delle Reti</h2>
+
+    <p>Una rete di TLC può essere studiata come un sistema (semplice o complesso) che interconnette gli end-system. L'analisi può seguire due approcci principali:</p>
+    <ol>
+        <li><strong>Struttura interna (Topologia)</strong>.</li>
+        <li><strong>Servizio di comunicazione offerto</strong> "ai morsetti esterni" (cioè, come la rete appare agli end-system).</li>
+    </ol>
+
+    <h3>3.1. Studio Basato sulla Topologia</h3>
+    <p>Un approccio "top-down" considera una rete complessa come l'<strong>unione di reti più semplici (sotto-sistemi)</strong>, connesse tra loro attraverso i nodi intermedi. Questi sotto-sistemi possono essere ulteriormente scomposti. Procedendo in questa scomposizione, si arriva al sistema più elementare di tutti: il <strong>singolo canale di trasmissione</strong>.</p>
+
+    <h3>3.2. Classificazione in Base al "Servizio Offerto"</h3>
+    <p>Questo criterio si suddivide ulteriormente:</p>
+
+    <h4>3.2.1. Classificazione per Numero di Destinatari</h4>
+    <p>Data una rete con $N$ end-system, la capacità di recapitare una comunicazione a uno o più destinatari definisce i seguenti servizi:</p>
+    <ul>
+        <li><strong>Servizio Unicast</strong>: Il flusso generato da 1 mittente viene recapitato a <strong>1 solo</strong> destinatario.</li>
+        <li><strong>Servizio Multicast</strong>: Lo stesso flusso generato da 1 mittente viene recapitato a <strong>D destinatari</strong> (con $1 \le D \le N-1$), che costituiscono un "gruppo di multicast".</li>
+        <li><strong>Servizio Anycast</strong>: Il flusso generato da 1 mittente viene recapitato a <strong>1 solo</strong> destinatario, scelto da un insieme di $D$ possibili candidati.</li>
+        <li><strong>Servizio Broadcast</strong>: Lo stesso flusso generato da 1 mittente viene recapitato a <strong>tutti gli altri</strong> $N-1$ end-system.</li>
+    </ul>
+
+    <h4>3.2.2. Classificazione per Direzione della Comunicazione</h4>
+    <p>Considerando due end-system collegati, il servizio può essere:</p>
+    <ul>
+        <li><strong>Servizio Simplex</strong>: La comunicazione può avvenire <strong>in un solo senso</strong>.</li>
+        <li><strong>Servizio Half-duplex</strong>: La comunicazione può avvenire nei due sensi, ma <strong>non contemporaneamente</strong>.</li>
+        <li><strong>Servizio Full-duplex</strong>: La comunicazione può avvenire nei due sensi <strong>anche contemporaneamente</strong>.</li>
+    </ul>
+
+    <h3>3.3. Il Concetto di Multiplazione (Multiplexing)</h3>
+    <p>Di norma, un'unica rete di TLC deve trasportare $N$ flussi comunicativi contemporaneamente.</p>
+    <p>La <strong>Multiplazione</strong> è l'operazione attraverso cui $N$ flussi comunicativi entranti distinti in una rete vengono consegnati distinti all'uscita della stessa. Il risultato è che i flussi viaggiano <strong>come se avessero attraversato $N$ reti fisicamente separate</strong>.</p>
+
+    <hr>
+
+    <h2>4. Studio del Sistema Elementare: Il Canale di Trasmissione</h2>
+
+    <p>Applichiamo ora i concetti generali di classificazione al sistema rete più semplice: il <strong>canale di trasmissione</strong> (o link) che collega direttamente 2 end-system.</p>
+    <p>Esempi di canali fisici includono: doppini telefonici, cavi di rete, fibre ottiche e aria/vuoto (wireless).</p>
+
+    <h3>4.1. Classificazione dei Canali</h3>
+
+    <h4>4.1.1. In Base alla Direzione (come per i servizi)</h4>
+    <ul>
+        <li><strong>Canali Simplex</strong>: Trasferiscono il flusso in un solo senso.</li>
+        <li><strong>Canali Half-duplex</strong>: Trasferiscono il flusso nei due sensi, ma non contemporaneamente.</li>
+        <li><strong>Canali Full-duplex</strong>: Trasferiscono il flusso nei due sensi contemporaneamente.</li>
+    </ul>
+
+    <h4>4.1.2. In Base al Numero di Nodi Collegati</h4>
+    <p>Questo criterio classifica i canali in base a quanti nodi possono collegare <em>direttamente</em>:</p>
+    <ul>
+        <li><strong>Canali Punto-a-Punto (Point-to-Point)</strong>:
+            <ul>
+                <li>Collegano fisicamente/direttamente <strong>2 soli nodi</strong> tra loro.</li>
+                <li><strong>Punto-a-punto Simplex</strong>: Un nodo è sempre mittente, l'altro sempre destinatario. Non serve un protocollo d'accesso.</li>
+                <li><strong>Punto-a-punto Half-duplex</strong>: I due nodi comunicano in entrambi i sensi, ma non simultaneamente. <strong>È necessario</strong> un protocollo d'accesso per regolamentare chi trasmette.</li>
+                <li><strong>Punto-a-punto Full-duplex</strong>: Equivale a due canali simplex paralleli in verso opposto. Non serve un protocollo d'accesso.</li>
+            </ul>
+        </li>
+        <li><strong>Canali ad Accesso Multiplo (Multiple Access)</strong>:
+            <ul>
+                <li>Collegano fisicamente/direttamente $N$ nodi tra loro (con $N > 2$).</li>
+                <li>Ogni nodo può comunicare direttamente con qualunque altro nodo.</li>
+                <li>È <strong>fondamentale regolamentare l'accesso</strong> al canale condiviso tramite appositi <strong>protocolli d'accesso</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Canali Multipunto (Multipoint)</strong>:
+            <ul>
+                <li>Sono fisicamente identici ai canali ad accesso multiplo (collegano $N$ nodi).</li>
+                <li>La differenza è nel <strong>vincolo imposto dal protocollo d'accesso</strong>: le comunicazioni non avvengono tra una coppia qualsiasi, ma <strong>solo tra un nodo specifico (master/primario) e uno qualunque dei restanti (slave/secondari)</strong>. Il master governa l'accesso.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <hr>
+
+    <h2>5. Segnali e Trasmissione</h2>
+
+    <h3>5.1. Cosa Viaggia sul Canale?</h3>
+    <p>All'atto pratico, un canale di trasmissione trasferisce <strong>segnali</strong>. Un segnale è la rappresentazione dell'andamento di una grandezza fisica (es. luminosità, tensione) nel tempo.</p>
+
+    <h3>5.2. Classificazione dei Segnali Temporali</h3>
+    <p>I segnali, rappresentati come una funzione $s(t)$, si classificano in base al dominio (tempo) e al codominio (valori).</p>
+    <p><strong>In base al Dominio (Tempo)</strong>:</p>
+    <ul>
+        <li><strong>Segnali a Tempo Continuo</strong>: La funzione $s(t)$ è definita su intervalli continui di tempo (es. $s(t): \mathcal{R} \rightarrow ...$).</li>
+        <li><strong>Segnali a Tempo Discreto</strong>: La funzione $s(t)$, ora $s(k)$, è definita solo su un insieme discreto di istanti di tempo (es. $s(k): \mathcal{Z} \rightarrow ...$).</li>
+    </ul>
+    <p><strong>In base al Codominio (Valori)</strong>:</p>
+    <ul>
+        <li><strong>Segnali a Valori Continui</strong>: La funzione $s(t)$ può assumere qualunque valore in un intervallo continuo.</li>
+        <li><strong>Segnali a Valori Discreti</strong>: La funzione $s(t)$ può assumere solo valori appartenenti a un insieme discreto.</li>
+    </ul>
+    <p>Combinando queste classificazioni, si ottengono 4 tipi:</p>
+    <ol>
+        <li><strong>Tempo Continuo, Valori Continui ($s(t): \mathcal{R} \rightarrow \mathcal{R}$)</strong>: Sono chiamati <strong>segnali analogici</strong>.</li>
+        <li><strong>Tempo Continuo, Valori Discreti ($s(t): \mathcal{R} \rightarrow \{\text{Insieme discreto}\}$)</strong>.</li>
+        <li><strong>Tempo Discreto, Valori Continui ($s(k): \mathcal{Z} \rightarrow \mathcal{R}$)</strong>.</li>
+        <li><strong>Tempo Discreto, Valori Discreti ($s(k): \mathcal{Z} \rightarrow \text{Insieme discreto}$)</strong>: Sono chiamati <strong>segnali numerici</strong>.
+            <ul>
+                <li>Un caso particolare diffusissimo sono i <strong>segnali numerici binari</strong> (es. $s(k): \mathcal{Z} \rightarrow \{0, 1\}$).</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>5.3. Trasmissione di Segnali Numerici: Le Codifiche di Linea</h3>
+    <p>Come si trasmette un segnale numerico binario (0 e 1) su un cavo (es. rame)?. Si usa una <strong>codifica di linea</strong> (codifica di linea), che stabilisce come gli 0 e gli 1 "si presentano sul cavo" (es. $0 \rightarrow V^-$ e $1 \rightarrow V^+$).</p>
+    <ul>
+        <li><strong>Codifica NRZ (Non-Return-to-Zero)</strong>:
+            <ul>
+                <li>$0 \rightarrow$ livello basso ($V^-$).</li>
+                <li>$1 \rightarrow$ livello alto ($V^+$).</li>
+                <li><strong>Problema</strong>: Trasmettitore e ricevitore usano clock interni. Il ricevitore "legge" la tensione a metà bit. Se i clock si disallineano (drift), la lettura è errata. L'allineamento si mantiene usando le <em>transizioni</em> di tensione. Lunghe sequenze di 0 (o 1) non provocano transizioni, causando la <strong>deriva (drift) dei clock</strong>.</li>
+            </ul>
+        </li>
+        <li><strong>Codifica Manchester</strong>:
+            <ul>
+                <li>$0 \rightarrow$ transizione Basso-Alto a metà bit.</li>
+                <li>$1 \rightarrow$ transizione Alto-Basso a metà bit.</li>
+                <li><strong>Vantaggio</strong>: Garantisce sempre un elevato numero di transizioni, mantenendo i clock sincronizzati.</li>
+                <li><strong>Svantaggio</strong>: Utilizza un numero doppio di transizioni rispetto a NRZ (occupa più "banda").</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>5.4. Grandezze Caratterizzanti un Canale Numerico</h3>
+    <p>I canali numerici sono alla base delle moderne reti di TLC. Sono caratterizzati da:</p>
+    <ul>
+        <li><strong>Velocità (o Capacità di Canale, $C$)</strong>: Il ritmo con cui i bit vengono trasmessi sul canale. Si misura in <strong>bit-per-second (bps)</strong>.</li>
+        <li><strong>Ritardo (o Latenza, $\tau$)</strong>: Il tempo di propagazione di un bit sul canale. Si misura in secondi (s, ms, µs, ns).</li>
+        <li><strong>Tasso d'Errore (BER = Bit Error Rate)</strong>.</li>
+    </ul>
+    <p>Se si trasmette un messaggio lungo $M$ bit:</p>
+    <ul>
+        <li>Il <strong>Tempo di Trasmissione</strong> (il tempo necessario al trasmettitore per "immettere" tutti gli $M$ bit sul canale) è $T_{\text{trasmissione\_di\_M}} = M / C$.</li>
+        <li>Il <strong>Ritardo di Propagazione</strong> (il tempo impiegato dal primo bit per arrivare dall'inizio alla fine del canale) è $\tau$.</li>
+    </ul>
+
+    <hr>
+
+    <h2>6. Multiplazione Fisica</h2>
+
+    <p>Nelle reti reali, spesso è necessario collegare due nodi con <em>fasci di canali</em> (più di un canale). Invece di stendere $N$ cavi, si applica la tecnica della <strong>multiplazione fisica</strong> a un unico canale fisico ad alta capacità, per ottenere $N$ canali separati e indipendenti.</p>
+    <p>Le tecniche principali sono:</p>
+    <ul>
+        <li><strong>FDM (Frequency Division Multiplexing)</strong>: Multiplazione nel dominio delle frequenze. Il canale fisico viene diviso in "fette" di frequenza. Ogni segnale modula un'onda portante con una frequenza diversa. Le onde viaggiano insieme senza interferire.</li>
+        <li><strong>TDM (Time Division Multiplexing)</strong>: Multiplazione nel dominio del tempo. Il canale fisico viene diviso in "fette" di tempo (istanti). Ciascun segnale (digitale) occupa il canale in istanti diversi rispetto agli altri, a turno.</li>
+        <li><strong>CDM (Code Division Multiplexing)</strong>: Multiplazione nel dominio dei codici.</li>
+        <li><strong>WDM (Wavelength Division Multiplexing)</strong>: Multiplazione nel dominio delle lunghezze d'onda. È la tecnica usata nelle <strong>fibre ottiche</strong> e, di fatto, è un FDM. Ogni segnale modula una portante ottica (luce) di un "colore" (cioè frequenza/lunghezza d'onda) diverso.</li>
+    </ul>
+
+    <hr>
+
+    <h2>7. Problematiche Generali: Instradamento e Commutazione</h2>
+
+    <p>Quando mittente e destinatario non sono connessi direttamente (topologia a maglia non completa), il flusso deve attraversare nodi intermedi. Questo solleva due problematiche fondamentali:</p>
+    <ol>
+        <li><strong>Instradamento (Routing)</strong>:
+            <ul>
+                <li>È l'operazione che consiste nel <strong>decidere il cammino</strong> che il flusso deve seguire attraverso i nodi intermedi per giungere a destinazione.</li>
+                <li>Questa è una funzione di "calcolo" o "scelta" del percorso (es. cammino più corto, più libero, ecc.).</li>
+            </ul>
+        </li>
+        <li><strong>Commutazione (Switching o Forwarding)</strong>:
+            <ul>
+                <li>È l'operazione di <strong>inoltro del traffico</strong> sul cammino scelto.</li>
+                <li>Questa è una funzione "esecutiva", svolta <strong>da ogni nodo intermedio</strong> sul cammino, che consiste nel prendere un flusso da un'interfaccia di ingresso e spostarlo sull'interfaccia di uscita corretta.</li>
+            </ul>
+        </li>
+    </ol>
+    <p>Questi concetti si applicano anche a comunicazioni non-unicast:</p>
+    <ul>
+        <li><strong>Instradamento Multicast</strong>: Calcolo dei cammini che collegano 1 mittente a <em>tutti</em> i membri del gruppo.</li>
+        <li><strong>Commutazione Multicast</strong>: Inoltro di un flusso da 1 interfaccia di ingresso verso <em>una o più</em> interfacce di uscita.</li>
+    </ul>
+
+    <hr>
+
+    <h2>8. Le Due Fondamentali Tipologie di Reti</h2>
+
+    <p>Le reti di TLC si dividono in due grandi famiglie, in base al principio usato dai nodi intermedi per effettuare la <strong>commutazione</strong>:</p>
+    <ol>
+        <li><strong>Reti a Commutazione di Circuito</strong> (es. reti telefoniche tradizionali).</li>
+        <li><strong>Reti a Commutazione di Pacchetto</strong> (es. reti di calcolatori, Internet).</li>
+    </ol>
+
+    <h3>8.1. Reti a Commutazione di Circuito</h3>
+    <ul>
+        <li><strong>Principio</strong>: All'interno di un nodo intermedio, ciò che arriva da un canale in ingresso viene semplicemente <strong>ritrasmesso su un (riservato) canale d'uscita</strong>. Il nodo intermedio <strong>non esamina</strong> il contenuto del flusso comunicativo.</li>
+        <li><strong>Risultato</strong>: Tra i due end-system si viene a formare un <strong>canale punto-a-punto dedicato e riservato</strong>, chiamato <strong>circuito</strong>.</li>
+        <li><strong>Fasci di Canali</strong>: Per gestire $N$ flussi contemporanei tra due nodi, servono $N$ canali dedicati. Nella pratica, questi $N$ canali non sono $N$ cavi fisici, ma sono ricavati da un unico canale fisico ad alta capacità tramite <strong>multiplazione fisica</strong> (es. TDM o FDM).</li>
+        <li><strong>Attivazione dei Circuiti</strong>:
+            <ul>
+                <li><em>Circuiti dedicati (permanenti)</em>: Il circuito è sempre attivo.</li>
+                <li><em>Circuiti attivi su richiesta (su base chiamata)</em>: Il circuito viene attivato su richiesta di un end-system. Questo richiede procedure di <strong>segnalazione</strong> per l'instaurazione (<em>circuit setup</em>) e l'abbattimento (<em>circuit termination</em>) del circuito.</li>
+            </ul>
+        </li>
+        <li><strong>Evoluzione</strong>: Storicamente, questa commutazione era manuale (centralinisti) e poi automatica elettromeccanica (es. Strowger, 1891).</li>
+        <li><strong>Stato Attuale</strong>: Le reti telefoniche attuali (e Internet) adottano prevalentemente la commutazione di pacchetto, sebbene residui di commutazione di circuito possano sopravvivere in periferia.</li>
+    </ul>
+
+    <h3>8.2. Reti a Commutazione di Pacchetto</h3>
+    <ul>
+        <li><strong>Principio</strong>:
+            <ol>
+                <li>L'end-system mittente scompone il flusso di dati in <strong>pacchetti</strong> (sequenze di bit).</li>
+                <li>Il pacchetto è inviato al primo nodo intermedio.</li>
+                <li>Il nodo intermedio <strong>analizza il pacchetto</strong> (i suoi bit) e, in base all'analisi, procede alla <strong>commutazione</strong> (lo ritrasmette) verso il nodo successivo corretto.</li>
+                <li>Il processo si ripete nodo per nodo fino a destinazione.</li>
+            </ol>
+        </li>
+        <li><strong>Differenza Chiave con Commutazione di Circuito</strong>:
+            <ul>
+                <li><strong>Nessuna Allocazione Riservata</strong>: Non richiede l'allocazione preventiva di una sequenza di canali (un circuito).</li>
+                <li><strong>Riconoscimento Flussi</strong>: In C. di Circuito, i flussi sono distinti perché transitano su <em>canali diversi</em>. In C. di Pacchetto, i flussi sono distinti perché il nodo <em>legge i bit</em> che compongono i pacchetti.</li>
+                <li><strong>Condivisione</strong>: In C. di Pacchetto, flussi comunicativi diversi <strong>possono condividere lo stesso canale</strong> (viaggiando uno dopo l'altro).</li>
+            </ul>
+        </li>
+        <li><strong>Il Nodo di Commutazione (Switch/Router)</strong>:
+            <ul>
+                <li>Poiché i canali sono condivisi, se più pacchetti (appartenenti a flussi diversi) sono destinati alla stessa interfaccia di uscita nello stesso momento, si creano <strong>code (accodamenti)</strong>.</li>
+                <li>I pacchetti vengono memorizzati temporaneamente in <em>buffer</em> (memorie). Se un pacchetto arriva e il buffer è già pieno, si verifica un <strong>buffer overflow</strong> e il pacchetto viene perso.</li>
+            </ul>
+        </li>
+        <li><strong>Modalità di Attraversamento del Nodo</strong>:
+            <ul>
+                <li><strong>Store and Forward</strong>: Un nodo intermedio <strong>deve ricevere completamente</strong> l'intero pacchetto (fino all'ultimo bit, $t_1$) prima di poter iniziare a trasmetterlo (dal primo bit, $t_2$) sul canale d'uscita (quindi $t_1 < t_2$).</li>
+                <li><strong>Cut-Through</strong>: Un nodo intermedio può <strong>iniziare a trasmettere</strong> il pacchetto sul canale d'uscita ($t_2$) <strong>anche se non ha ancora finito di riceverlo</strong> ($t_1$) (quindi $t_1 > t_2$).</li>
+            </ul>
+        </li>
+    </ul>
+
+</body>
+</html>
