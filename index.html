@@ -65,73 +65,19 @@
 <body>
     <h1>Indice Riassunti Reti</h1>
     <h2 id="capitoli">Capitoli</h2>
-    <ul id="chapter-list" class="chapter-list" aria-label="Elenco capitoli">
-        <li style="color:#666">Caricamento elenco capitoli…</li>
+    <ul class="chapter-list" aria-label="Elenco capitoli">
+        <li>
+            <a class="chapter-link" href="Cap01.html">Capitolo 1 – Introduzione e Fondamenti</a>
+            <div style="font-size:.8em; color:#555; margin-top:.25em;">Topologie, classificazioni, segnali e concetti base di multiplazione e commutazione.</div>
+        </li>
+        <li>
+            <a class="chapter-link" href="Cap02.html">Capitolo 2 – Analisi Prestazionale</a>
+            <div style="font-size:.8em; color:#555; margin-top:.25em;">Definizioni di throughput, capacità, latenza, utilizzo e modelli semplificati di canali e nodi.</div>
+        </li>
+        <li>
+            <a class="chapter-link" href="Cap03.html">Capitolo 3 – Approcci alla Costruzione di Reti a Pacchetto</a>
+            <div style="font-size:.8em; color:#555; margin-top:.25em;">Perché l'approccio monolitico non funziona e principi dell'architettura a strati (incapsulamento, livelli, protocolli).</div>
+        </li>
     </ul>
-
-    <script>
-    (function(){
-        // Configura qui il repository e la cartella da scandire
-        const owner = 'SimoGatti04';
-        const repo = 'RETI';
-        const path = 'Riassunti'; // cartella dove sono i file html
-
-        const listEl = document.getElementById('chapter-list');
-
-        async function fetchContents(){
-            try{
-                const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-                const res = await fetch(apiUrl);
-                if(!res.ok) throw new Error('HTTP ' + res.status);
-                const items = await res.json();
-                const htmlFiles = (items||[]).filter(i => i.type === 'file' && i.name.toLowerCase().endsWith('.html'));
-                // ordinamento naturale (Cap01, Cap02, ...)
-                htmlFiles.sort((a,b)=> a.name.localeCompare(b.name, undefined, {numeric:true, sensitivity:'base'}));
-
-                listEl.innerHTML = '';
-                if(htmlFiles.length === 0){
-                    listEl.innerHTML = '<li style="color:#666">Nessun file HTML trovato nella cartella.</li>';
-                    return;
-                }
-
-                for(const file of htmlFiles){
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    a.className = 'chapter-link';
-                    // link relativo (funziona se i file sono nella stessa cartella di index.html)
-                    a.href = file.name;
-                    // testuale provvisorio: il nome del file senza estensione
-                    a.textContent = file.name.replace('.html','');
-
-                    // prova a recuperare il titolo H1 direttamente dal file
-                    try{
-                        if(file.download_url){
-                            const txtRes = await fetch(file.download_url);
-                            if(txtRes.ok){
-                                const txt = await txtRes.text();
-                                const m = txt.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-                                if(m && m[1]){
-                                    a.textContent = m[1].replace(/\s+/g,' ').trim();
-                                }
-                            }
-                        }
-                    }catch(e){
-                        // se fallisce, mantieni il nome del file come titolo
-                        console.debug('Impossibile leggere contenuto di', file.name, e);
-                    }
-
-                    li.appendChild(a);
-                    listEl.appendChild(li);
-                }
-            }catch(err){
-                console.error('Errore aggiornamento indice:', err);
-                listEl.innerHTML = '<li style="color:#a00">Impossibile aggiornare automaticamente l\'indice. Controlla che il repository sia pubblico e raggiungibile.</li>';
-            }
-        }
-
-        // Esegui al caricamento della pagina
-        if(listEl) fetchContents();
-    })();
-    </script>
 </body>
 </html>
