@@ -86,7 +86,7 @@
 
     <h2>2. Topologie di Rete: Come Interconnettere i Nodi</h2>
 
-    <p>Il problema di <em>come</em> interconnettere i nodi finali riguarda la <strong>topologia</strong> della rete. Questo campo è studiato formalmente dalla Teoria dei Grafi. Le topologie principali sono:</p>
+    <p>Il problema di <em>come</em> interconnettere i nodi finali riguarda la <strong>topologia</strong> della rete. Le topologie principali sono:</p>
 
     <h3>2.1. Topologia a Maglia Completa (Full Mesh)</h3>
     <p>In questa topologia, <strong>per ogni coppia di nodi esiste un canale di trasmissione che li collega direttamente</strong>.</p>
@@ -208,49 +208,8 @@
     <h3>5.1. Cosa Viaggia sul Canale?</h3>
     <p>All'atto pratico, un canale di trasmissione trasferisce <strong>segnali</strong>. Un segnale è la rappresentazione dell'andamento di una grandezza fisica (es. luminosità, tensione) nel tempo.</p>
 
-    <h3>5.2. Classificazione dei Segnali Temporali</h3>
-    <p>I segnali, rappresentati come una funzione $s(t)$, si classificano in base al dominio (tempo) e al codominio (valori).</p>
-    <p><strong>In base al Dominio (Tempo)</strong>:</p>
-    <ul>
-        <li><strong>Segnali a Tempo Continuo</strong>: La funzione $s(t)$ è definita su intervalli continui di tempo (es. $s(t): \mathcal{R} \rightarrow ...$).</li>
-        <li><strong>Segnali a Tempo Discreto</strong>: La funzione $s(t)$, ora $s(k)$, è definita solo su un insieme discreto di istanti di tempo (es. $s(k): \mathcal{Z} \rightarrow ...$).</li>
-    </ul>
-    <p><strong>In base al Codominio (Valori)</strong>:</p>
-    <ul>
-        <li><strong>Segnali a Valori Continui</strong>: La funzione $s(t)$ può assumere qualunque valore in un intervallo continuo.</li>
-        <li><strong>Segnali a Valori Discreti</strong>: La funzione $s(t)$ può assumere solo valori appartenenti a un insieme discreto.</li>
-    </ul>
-    <p>Combinando queste classificazioni, si ottengono 4 tipi:</p>
-    <ol>
-        <li><strong>Tempo Continuo, Valori Continui ($s(t): \mathcal{R} \rightarrow \mathcal{R}$)</strong>: Sono chiamati <strong>segnali analogici</strong>.</li>
-        <li><strong>Tempo Continuo, Valori Discreti ($s(t): \mathcal{R} \rightarrow \{\text{Insieme discreto}\}$)</strong>.</li>
-        <li><strong>Tempo Discreto, Valori Continui ($s(k): \mathcal{Z} \rightarrow \mathcal{R}$)</strong>.</li>
-        <li><strong>Tempo Discreto, Valori Discreti ($s(k): \mathcal{Z} \rightarrow \text{Insieme discreto}$)</strong>: Sono chiamati <strong>segnali numerici</strong>.
-            <ul>
-                <li>Un caso particolare diffusissimo sono i <strong>segnali numerici binari</strong> (es. $s(k): \mathcal{Z} \rightarrow \{0, 1\}$).</li>
-            </ul>
-        </li>
-    </ol>
-
     <h3>5.3. Trasmissione di Segnali Numerici: Le Codifiche di Linea</h3>
     <p>Come si trasmette un segnale numerico binario (0 e 1) su un cavo (es. rame)?. Si usa una <strong>codifica di linea</strong> (codifica di linea), che stabilisce come gli 0 e gli 1 "si presentano sul cavo" (es. $0 \rightarrow V^-$ e $1 \rightarrow V^+$).</p>
-    <ul>
-        <li><strong>Codifica NRZ (Non-Return-to-Zero)</strong>:
-            <ul>
-                <li>$0 \rightarrow$ livello basso ($V^-$).</li>
-                <li>$1 \rightarrow$ livello alto ($V^+$).</li>
-                <li><strong>Problema</strong>: Trasmettitore e ricevitore usano clock interni. Il ricevitore "legge" la tensione a metà bit. Se i clock si disallineano (drift), la lettura è errata. L'allineamento si mantiene usando le <em>transizioni</em> di tensione. Lunghe sequenze di 0 (o 1) non provocano transizioni, causando la <strong>deriva (drift) dei clock</strong>.</li>
-            </ul>
-        </li>
-        <li><strong>Codifica Manchester</strong>:
-            <ul>
-                <li>$0 \rightarrow$ transizione Basso-Alto a metà bit.</li>
-                <li>$1 \rightarrow$ transizione Alto-Basso a metà bit.</li>
-                <li><strong>Vantaggio</strong>: Garantisce sempre un elevato numero di transizioni, mantenendo i clock sincronizzati.</li>
-                <li><strong>Svantaggio</strong>: Utilizza un numero doppio di transizioni rispetto a NRZ (occupa più "banda").</li>
-            </ul>
-        </li>
-    </ul>
 
     <h3>5.4. Grandezze Caratterizzanti un Canale Numerico</h3>
     <p>I canali numerici sono alla base delle moderne reti di TLC. Sono caratterizzati da:</p>
@@ -341,14 +300,8 @@
         <li><strong>Differenza Chiave con Commutazione di Circuito</strong>:
             <ul>
                 <li><strong>Nessuna Allocazione Riservata</strong>: Non richiede l'allocazione preventiva di una sequenza di canali (un circuito).</li>
-                <li><strong>Riconoscimento Flussi</strong>: In C. di Circuito, i flussi sono distinti perché transitano su <em>canali diversi</em>. In C. di Pacchetto, i flussi sono distinti perché il nodo <em>legge i bit</em> che compongono i pacchetti.</li>
-                <li><strong>Condivisione</strong>: In C. di Pacchetto, flussi comunicativi diversi <strong>possono condividere lo stesso canale</strong> (viaggiando uno dopo l'altro).</li>
-            </ul>
-        </li>
-        <li><strong>Il Nodo di Commutazione (Switch/Router)</strong>:
-            <ul>
-                <li>Poiché i canali sono condivisi, se più pacchetti (appartenenti a flussi diversi) sono destinati alla stessa interfaccia di uscita nello stesso momento, si creano <strong>code (accodamenti)</strong>.</li>
-                <li>I pacchetti vengono memorizzati temporaneamente in <em>buffer</em> (memorie). Se un pacchetto arriva e il buffer è già pieno, si verifica un <strong>buffer overflow</strong> e il pacchetto viene perso.</li>
+                <li><strong>Riconoscimento Flussi</strong>: In Commutazione di Circuito, i flussi sono distinti perché transitano su <em>canali diversi</em>. In Commutazione di Pacchetto, i flussi sono distinti perché il nodo <em>legge i bit</em> che compongono i pacchetti.</li>
+                <li><strong>Condivisione</strong>: In Commutazione di Pacchetto, flussi comunicativi diversi <strong>possono condividere lo stesso canale</strong> (viaggiando uno dopo l'altro).</li>
             </ul>
         </li>
         <li><strong>Modalità di Attraversamento del Nodo</strong>:

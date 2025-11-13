@@ -79,5 +79,70 @@
             <div style="font-size:.8em; color:#555; margin-top:.25em;">Perché l'approccio monolitico non funziona e principi dell'architettura a strati (incapsulamento, livelli, protocolli).</div>
         </li>
     </ul>
+    <h2>IMPORTANTE</h2>
+    <p>Ho aggiunto una sezione commenti in fondo se vi serve chiedere qualcosa. Risponderò aggiornando questa pagina se serve. Ho aggiunto anche una sezione per i dettagli della verifica e una di comunicazioni più sotto. Leggetela</p>
+    <h2 id="notes">Verifica Lunedì 17 Novembre</h2>
+    <p>La verifica:</p> 
+    <ul>
+        <li>Sarà sui capitoli 1, 2 e 3</li>
+        <li>Il capitolo 4 che ho spiegato Giovedì 13 Novembre non verrà incluso in verifica</li>
+        <li>Come per HTML avrà molte domande e avrete tutto il tempo che volete a disposizione, in questo modo tutti possono puntare almeno alla sufficienza</li>
+    </ul>
+    <h2 id="comunicazioni">Comunicazione per Adam e Nicola</h2>
+    <p>Adam e Nicola per qualche motivo (non credo sia colpa vostra) non avete voti in Laboratorio di Reti, Informatica e Hardware</p>
+    <p>Vi chiedo per quando riuscite (prima possibile da lunedì 17 in poi) di preparare qualcosa da esporre su questi argomenti di cui i vostri compagni hanno già voto sul registro:</p>
+    <ul>
+        <li>Conversione decimale - binario (Informatica)</li>
+        <li>Fondamenti di Rete (Capitolo 1 di questa pagina)</li>
+        <li>Fondamenti di Hardware (Componenti del PC e sistema I/O)</li>
+    </ul>
+    <p>Il mio consiglio in vista delle verifiche e interrogazioni organizzate è questo, ma potete scegliere le date che preferite:</p>
+    <ul>
+        <li>Per Venerdì 17 Novembre dato che avete già la verifica sui capitoli 1, 2 e 3 vi faccio qualche domanda sul capitolo 1, che era quello della prima verifica, almeno siete apposto per quel voto</li>
+        <li>Per Lunedì 1 Dicembre/Giovedì 4 Dicembre preparatevi sulla conversione decimale - binaria (oltre che sugli argomenti dell'interrogazione generale) così oltre all'interrogazione normale che farò a tutta la classe vi aggiungo il voto anche per quello</li>
+        <li>Hardware potete farlo quando volete dato che non faremo altre verifiche</li>
+    </ul>
+    <p>Come detto questo è un consiglio ma potete farle quando volete e nella modalità che preferite, non per forza interrogazione</p>
+    <p>Notate che questi voti sono da mettere entro Lunedì 8 Dicembre</p>
+    <p>Come già detto per le altre verifiche vorrei evitare di mettere insufficienze, quindi potete tentare l'interrogazione quante volte volete fino a quando raggiungete la sufficienza</p>
+    <p>In sostanza l'unico modo di prendere insufficiente è arrivare al 15 Dicembre (ultima mia lezione nella vostra classe) totalmente impreparati</p>
+
+    <!-- Sistema Commenti -->
+    <div id="comments-section" style="margin-top: 50px; border-top: 2px solid #eaecef; padding-top: 30px;">
+        <h2 style="border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; margin-bottom: 24px;">Commenti</h2>
+        
+        <!-- Form per nuovo commento -->
+        <div style="background: #f6f8fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e1e4e8;">
+            <form id="comment-form">
+                <div style="margin-bottom: 15px;">
+                    <label for="comment-name" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Nome:</label>
+                    <input type="text" id="comment-name" required 
+                           style="width: 100%; max-width: 400px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1em;"
+                           placeholder="Il tuo nome">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="comment-text" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Commento:</label>
+                    <textarea id="comment-text" required rows="4"
+                              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 1em; resize: vertical;"
+                              placeholder="Scrivi il tuo commento qui..."></textarea>
+                </div>
+                <button type="submit" 
+                        style="background: #0366d6; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 1em; transition: background 0.2s;">
+                    Invia commento
+                </button>
+            </form>
+            <div id="comment-message" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- Lista commenti -->
+        <div id="comments-list"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Sistema Commenti -->
+    <script src="comments.js"></script>
 </body>
 </html>
