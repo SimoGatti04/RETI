@@ -87,11 +87,6 @@
         const container = document.getElementById('comments-list');
         if (!container) return;
 
-        if (comments.length === 0) {
-            container.innerHTML = '<p style="color: #666; font-style: italic; padding: 20px; text-align: center;">Nessun commento ancora. Sii il primo a commentare!</p>';
-            return;
-        }
-
         container.innerHTML = comments.map(comment => `
             <div class="comment-item" style="background: #f6f8fa; padding: 15px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #0366d6;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; flex-wrap: wrap; gap: 10px;">

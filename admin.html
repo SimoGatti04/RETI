@@ -526,11 +526,6 @@
             // Ordina per data (più recenti prima)
             filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-            if (filtered.length === 0) {
-                container.innerHTML = '<div id="no-comments">Nessun commento trovato.</div>';
-                return;
-            }
-
             container.innerHTML = filtered.map(comment => {
                 // Sanitizza ID per uso in HTML
                 const safeId = String(comment.id).replace(/[^a-zA-Z0-9_-]/g, '_');
