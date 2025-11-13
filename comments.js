@@ -33,11 +33,6 @@
     
     const database = firebase.database();
 
-    // Ottieni la pagina corrente
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    // Sanitizza pageKey: rimuovi .html prima, poi caratteri speciali
-    const pageKey = currentPage.replace(/\.html$/, '').replace(/[^a-zA-Z0-9]/g, '_');
-
     // Funzioni di utilità
     function escapeHtml(text) {
         if (!text) return '';
@@ -60,33 +55,42 @@
 
     // Carica e mostra i commenti
     function loadComments() {
-        const commentsRef = database.ref(`comments/${pageKey}`);
         const container = document.getElementById('comments-list');
-        
         if (!container) return;
 
+        // Carica direttamente da comments/ (senza raggruppamento per pagina)
+        const commentsRef = database.ref('comments');
         commentsRef.orderByChild('timestamp').on('value', (snapshot) => {
             const comments = [];
-            snapshot.forEach((child) => {
-                const comment = child.val();
-                if (comment.approved) {
-                    comments.push({ id: child.key, ...comment });
-                }
-            });
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    const comment = child.val();
+                    if (comment && comment.approved) {
+                        comments.push({ 
+                            id: child.key, 
+                            ...comment 
+                        });
+                    }
+                });
+            }
             
-            displayComments(comments.reverse()); // Più recenti prima
+            // Ordina per timestamp (più recenti prima)
+            comments.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            displayComments(comments);
         }, (error) => {
             console.error('Errore nel caricamento commenti:', error);
-            const container = document.getElementById('comments-list');
-            if (container) {
-                container.innerHTML = '<p style="color: #dc3545; padding: 20px;">Errore nel caricamento dei commenti. Riprova più tardi.</p>';
-            }
+            container.innerHTML = '<p style="color: #dc3545; padding: 20px;">Errore nel caricamento dei commenti. Riprova più tardi.</p>';
         });
     }
 
     function displayComments(comments) {
         const container = document.getElementById('comments-list');
         if (!container) return;
+
+        if (comments.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic; padding: 20px; text-align: center;">Nessun commento ancora. Sii il primo a commentare!</p>';
+            return;
+        }
 
         container.innerHTML = comments.map(comment => `
             <div class="comment-item" style="background: #f6f8fa; padding: 15px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #0366d6;">
@@ -134,16 +138,15 @@
                 submitButton.textContent = 'Invio in corso...';
             }
 
-            // Salva il commento (non approvato)
-            const commentsRef = database.ref(`comments/${pageKey}`);
+            // Salva il commento (non approvato) direttamente in comments/
+            const commentsRef = database.ref('comments');
             const newCommentRef = commentsRef.push();
             
             newCommentRef.set({
                 name: name,
                 text: text,
                 timestamp: Date.now(),
-                approved: false,
-                page: currentPage
+                approved: false
             })
             .then(() => {
                 if (messageDiv) {

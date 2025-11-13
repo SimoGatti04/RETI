@@ -270,14 +270,6 @@
         </div>
 
         <div class="filters">
-            <label><strong>Filtra per pagina:</strong></label>
-            <select id="page-filter">
-                <option value="all">Tutte le pagine</option>
-                <option value="index">Index</option>
-                <option value="Cap01">Capitolo 1</option>
-                <option value="Cap02">Capitolo 2</option>
-                <option value="Cap03">Capitolo 3</option>
-            </select>
             <label><strong>Stato:</strong></label>
             <select id="status-filter">
                 <option value="all">Tutti</option>
@@ -369,7 +361,6 @@
         // FIREBASE E GESTIONE COMMENTI
         // ============================================
         let allComments = [];
-        // Usa window.database invece di una variabile let per evitare problemi di scope
 
         function initAdmin() {
             // Verifica che Firebase sia caricato
@@ -472,10 +463,11 @@
             container.innerHTML = '<div id="loading">Caricamento commenti...</div>';
 
             console.log('Caricamento commenti da Firebase...');
+            
+            // Carica direttamente da comments/ (senza raggruppamento per pagina)
             const commentsRef = window.database.ref('comments');
             
-            // Usa on() invece di once() per aggiornamenti in tempo reale
-            // Rimuovi il listener precedente se esiste
+            // Rimuovi listener precedente se esiste
             if (window.commentsListener) {
                 commentsRef.off('value', window.commentsListener);
             }
@@ -484,23 +476,15 @@
                 console.log('Snapshot ricevuto:', snapshot.exists() ? 'dati presenti' : 'nessun dato');
                 allComments = [];
                 if (snapshot.exists()) {
-                    snapshot.forEach((pageSnapshot) => {
-                        const pageKey = pageSnapshot.key;
-                        console.log('Pagina trovata:', pageKey);
-                        pageSnapshot.forEach((commentSnapshot) => {
-                            const comment = commentSnapshot.val();
-                            allComments.push({
-                                id: commentSnapshot.key,
-                                page: pageKey,
-                                ...comment
-                            });
+                    snapshot.forEach((commentSnapshot) => {
+                        const comment = commentSnapshot.val();
+                        allComments.push({
+                            id: commentSnapshot.key,
+                            ...comment
                         });
                     });
-                    console.log('Commenti caricati:', allComments.length);
-                } else {
-                    console.log('Nessun commento trovato nel database');
                 }
-
+                console.log('Commenti caricati:', allComments.length);
                 updateStats();
                 displayComments();
             };
@@ -508,14 +492,9 @@
             commentsRef.on('value', window.commentsListener, (error) => {
                 if (error) {
                     console.error('Errore nel listener:', error);
-                    console.error('Dettagli errore:', {
-                        code: error.code,
-                        message: error.message,
-                        stack: error.stack
-                    });
                     const container = document.getElementById('comments-container');
                     if (container) {
-                        container.innerHTML = '<div id="no-comments">Errore nel caricamento dei commenti: ' + (error.message || error) + '<br>Controlla la console per maggiori dettagli.</div>';
+                        container.innerHTML = '<div id="no-comments">Errore nel caricamento dei commenti: ' + (error.message || error) + '</div>';
                     }
                 }
             });
@@ -532,19 +511,12 @@
         }
 
         function displayComments() {
-            const pageFilter = document.getElementById('page-filter').value;
             const statusFilter = document.getElementById('status-filter').value;
             const container = document.getElementById('comments-container');
 
             let filtered = allComments;
 
-            if (pageFilter !== 'all') {
-                filtered = filtered.filter(c => {
-                    const pageKey = c.page.replace(/[^a-zA-Z0-9]/g, '_');
-                    return pageKey === pageFilter || c.page === pageFilter;
-                });
-            }
-
+            // Filtra solo per stato (non serve più filtrare per pagina, sono tutti in index)
             if (statusFilter === 'pending') {
                 filtered = filtered.filter(c => !c.approved);
             } else if (statusFilter === 'approved') {
@@ -560,24 +532,8 @@
             }
 
             container.innerHTML = filtered.map(comment => {
-                // comment.page è già il pageKey corretto dal database (pageSnapshot.key)
-                // Non sanitizzarlo di nuovo, usalo direttamente per le operazioni sul database
-                const dbPageKey = String(comment.page); // Questo è già il pageKey corretto dal path del database
-                
-                // Per il nome della pagina da mostrare, crea una versione leggibile
-                let displayPageKey = dbPageKey;
-                // Rimuovi underscore finali o conversioni strane per mostrare un nome più leggibile
-                if (displayPageKey === 'index_html') displayPageKey = 'index';
-                const pageName = {
-                    'index': 'Index',
-                    'Cap01': 'Capitolo 1',
-                    'Cap02': 'Capitolo 2',
-                    'Cap03': 'Capitolo 3'
-                }[displayPageKey] || displayPageKey;
-
-                // Sanitizza ID per uso in HTML (rimuove caratteri problematici)
+                // Sanitizza ID per uso in HTML
                 const safeId = String(comment.id).replace(/[^a-zA-Z0-9_-]/g, '_');
-                const safePageKey = String(dbPageKey).replace(/[^a-zA-Z0-9_-]/g, '_');
 
                 return `
                     <div class="comment ${comment.approved ? 'approved' : 'pending'}" id="comment-${safeId}">
@@ -588,7 +544,6 @@
                                     <span class="badge ${comment.approved ? 'approved' : 'pending'}">
                                         ${comment.approved ? '✓ Approvato' : '⏳ In attesa'}
                                     </span>
-                                    <span style="color: #666;">📄 ${pageName}</span>
                                     <span style="color: #666;">🕒 ${formatDate(comment.timestamp)}</span>
                                 </div>
                             </div>
@@ -602,13 +557,13 @@
                             </div>
                         ` : ''}
                         <div class="actions">
-                            ${!comment.approved ? `<button class="btn-approve" data-comment-id="${comment.id}" data-page-key="${dbPageKey}" onclick="approveCommentHandler(this)">✓ Approva</button>` : ''}
+                            ${!comment.approved ? `<button class="btn-approve" data-comment-id="${comment.id}" onclick="approveCommentHandler(this)">✓ Approva</button>` : ''}
                             <button class="btn-reply" data-comment-id="${comment.id}" data-safe-id="${safeId}" onclick="toggleReplyFormHandler('${safeId}')">💬 Rispondi</button>
-                            <button class="btn-delete" data-comment-id="${comment.id}" data-page-key="${dbPageKey}" onclick="deleteCommentHandler(this)">🗑️ Elimina</button>
+                            <button class="btn-delete" data-comment-id="${comment.id}" onclick="deleteCommentHandler(this)">🗑️ Elimina</button>
                         </div>
                         <div id="reply-form-${safeId}" class="reply-form" style="display: none;">
                             <textarea id="reply-text-${safeId}" placeholder="Scrivi la tua risposta..."></textarea>
-                            <button class="btn-reply" data-comment-id="${comment.id}" data-page-key="${dbPageKey}" data-safe-id="${safeId}" onclick="sendReplyHandler(this)">Invia risposta</button>
+                            <button class="btn-reply" data-comment-id="${comment.id}" data-safe-id="${safeId}" onclick="sendReplyHandler(this)">Invia risposta</button>
                         </div>
                     </div>
                 `;
@@ -618,14 +573,12 @@
         // Funzioni handler per evitare problemi con escape e accesso globale
         function approveCommentHandler(button) {
             const id = button.getAttribute('data-comment-id');
-            const pageKey = button.getAttribute('data-page-key');
-            approveComment(id, pageKey);
+            approveComment(id);
         }
 
         function deleteCommentHandler(button) {
             const id = button.getAttribute('data-comment-id');
-            const pageKey = button.getAttribute('data-page-key');
-            deleteComment(id, pageKey);
+            deleteComment(id);
         }
 
         function toggleReplyFormHandler(id) {
@@ -634,35 +587,44 @@
 
         function sendReplyHandler(button) {
             const id = button.getAttribute('data-comment-id');
-            const pageKey = button.getAttribute('data-page-key');
             const safeId = button.getAttribute('data-safe-id') || id;
-            sendReply(id, pageKey, safeId);
+            sendReply(id, safeId);
         }
 
-        function approveComment(id, pageKey) {
+        function approveComment(id) {
             if (!window.database) {
                 alert('Database non inizializzato. Ricarica la pagina.');
                 return;
             }
 
-            // pageKey è già il pageKey corretto dal database, usalo direttamente
-            // Ma assicuriamoci che non contenga caratteri non validi (dovrebbe già essere sicuro)
-            const sanitizedPageKey = String(pageKey).replace(/[.#$\[\]]/g, '_');
+            console.log('Approvazione commento:', { id });
+            const commentRef = window.database.ref(`comments/${id}`);
             
-            console.log('Approvazione commento:', { id, pageKey, sanitizedPageKey });
-            const commentRef = window.database.ref(`comments/${sanitizedPageKey}/${id}`);
-            commentRef.update({ approved: true })
-                .then(() => {
+            commentRef.transaction((currentData) => {
+                if (currentData === null) {
+                    return null; // Commento non trovato
+                }
+                // Mantieni tutti i dati esistenti e aggiungi solo approved: true
+                return {
+                    ...currentData,
+                    approved: true
+                };
+            })
+            .then((result) => {
+                if (result.committed) {
                     console.log('Commento approvato con successo');
-                    loadComments();
-                })
-                .catch(err => {
-                    console.error('Errore approvazione:', err);
-                    alert('Errore nell\'approvazione: ' + (err.message || err));
-                });
+                } else {
+                    console.warn('Approvazione non completata - commento non trovato');
+                    alert('Commento non trovato');
+                }
+            })
+            .catch(err => {
+                console.error('Errore approvazione:', err);
+                alert('Errore nell\'approvazione: ' + (err.message || err));
+            });
         }
 
-        function deleteComment(id, pageKey) {
+        function deleteComment(id) {
             if (!window.database) {
                 alert('Database non inizializzato. Ricarica la pagina.');
                 return;
@@ -670,16 +632,11 @@
 
             if (!confirm('Sei sicuro di voler eliminare questo commento?')) return;
             
-            // pageKey è già il pageKey corretto dal database, usalo direttamente
-            // Ma assicuriamoci che non contenga caratteri non validi (dovrebbe già essere sicuro)
-            const sanitizedPageKey = String(pageKey).replace(/[.#$\[\]]/g, '_');
-            
-            console.log('Eliminazione commento:', { id, pageKey, sanitizedPageKey });
-            const commentRef = window.database.ref(`comments/${sanitizedPageKey}/${id}`);
+            console.log('Eliminazione commento:', { id });
+            const commentRef = window.database.ref(`comments/${id}`);
             commentRef.remove()
                 .then(() => {
                     console.log('Commento eliminato con successo');
-                    loadComments();
                 })
                 .catch(err => {
                     console.error('Errore eliminazione:', err);
@@ -694,7 +651,7 @@
             }
         }
 
-        function sendReply(id, pageKey, safeId) {
+        function sendReply(id, safeId) {
             if (!window.database) {
                 alert('Database non inizializzato. Ricarica la pagina.');
                 return;
@@ -713,21 +670,29 @@
                 return;
             }
 
-            // pageKey è già il pageKey corretto dal database, usalo direttamente
-            // Ma assicuriamoci che non contenga caratteri non validi (dovrebbe già essere sicuro)
-            const sanitizedPageKey = String(pageKey).replace(/[.#$\[\]]/g, '_');
+            console.log('Invio risposta:', { id, replyText });
+            const commentRef = window.database.ref(`comments/${id}`);
             
-            console.log('Invio risposta:', { id, pageKey, sanitizedPageKey, replyText });
-            const commentRef = window.database.ref(`comments/${sanitizedPageKey}/${id}`);
-            commentRef.update({
-                reply: replyText,
-                replyTimestamp: Date.now()
+            commentRef.transaction((currentData) => {
+                if (currentData === null) {
+                    return null; // Commento non trovato
+                }
+                // Mantieni tutti i dati esistenti e aggiungi/aggiorna solo reply
+                return {
+                    ...currentData,
+                    reply: replyText,
+                    replyTimestamp: Date.now()
+                };
             })
-            .then(() => {
-                console.log('Risposta inviata con successo');
-                replyTextarea.value = '';
-                toggleReplyForm(safeId || id);
-                loadComments();
+            .then((result) => {
+                if (result.committed) {
+                    console.log('Risposta inviata con successo');
+                    replyTextarea.value = '';
+                    toggleReplyForm(safeId || id);
+                } else {
+                    console.warn('Risposta non completata - commento non trovato');
+                    alert('Commento non trovato');
+                }
             })
             .catch(err => {
                 console.error('Errore invio risposta:', err);
@@ -765,7 +730,6 @@
         }
 
         // Filtri
-        document.getElementById('page-filter').addEventListener('change', displayComments);
         document.getElementById('status-filter').addEventListener('change', displayComments);
 
         // Non serve più l'auto-refresh perché usiamo listener in tempo reale
